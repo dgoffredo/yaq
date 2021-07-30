@@ -2,7 +2,7 @@ yaq
 ===
 **y**et **a**nother **q**ueue
 
-<img alt="yaks in a queue" src="yaks.jpg" width="400"/>
+<img alt="yaks in a queue" src="yaks.webp" width="400"/>
 
 Why
 ---
