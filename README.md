@@ -124,11 +124,11 @@ $ curl http://localhost:1337/fish/saltwater
 ^C
 $ curl http://localhost:1337/fish/saltwater?timeout=2s
 $ curl --write-out '%{http_code}' http://localhost:1337/fish/saltwater?timeout=2s
-204
-$ curl http://localhost:1337/fish/saltwater &
+504
+$ curl http://localhost:1337/fish/saltwater | sed 's/^/from background consumer: /' &
 $ curl --request POST --data 'wrasse' http://localhost:1337/fish/saltwater
-wrasse
-[2]+  Done                    curl http://localhost:1337/fish/saltwater
+from background consumer: wrasse
+[2]+  Done                    curl http://localhost:1337/fish/saltwater | sed 's/^/from background consumer: /'
 $ curl --request POST --data 'shark' http://localhost:1337/fish/saltwater
 $ find /tmp/queues/
 /tmp/queues/
