@@ -27,3 +27,5 @@ e.g.
     .*/bill
         messageCount < 1
 
+Let's make the initial cut of this project be without configuration, without
+timeouts, without streaming, etc.
