@@ -5,14 +5,23 @@ import (
 	"net/http"
 )
 
+// TODO: document
 type messageSend struct {
+	// TODO: document
 	Request http.Request
-	Done    chan struct{}
+	// TODO: document
+	DoneChan chan error
 	// TODO
 }
 
+// TODO: document
 type messageReceive interface {
-	io.Reader
-	Headers() map[string][]string
-	Done()
+	// TODO: document
+	Body() io.Reader
+	// TODO: document
+	Header() http.Header
+	// TODO: document
+	ContentLength() int64
+	// TODO: document
+	Done(error)
 }
