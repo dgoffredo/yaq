@@ -21,6 +21,8 @@ type Registry struct {
 	// TODO: document
 	RootDirectory string
 	// TODO: document
+	Context context.Context
+	// TODO: document
 	mutex sync.Mutex
 	// TODO: document
 	queues map[string]*refCountedClerk
@@ -138,11 +140,8 @@ func (registry *Registry) Dequeue(requestCtx context.Context, queue string, writ
 		// Then copy the body of the message into the body of the response.
 		copyHeader("Content-Type", message.Header(), writer.Header())
 		copyHeader("Content-Encoding", message.Header(), writer.Header())
-		if _, err := io.CopyN(writer, message.Body(), message.ContentLength()); err != nil {
-			return err
-		}
-
-		return nil
+		_, err := io.CopyN(writer, message.Body(), message.ContentLength())
+		return err
 	})
 }
 

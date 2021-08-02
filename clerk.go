@@ -2,33 +2,84 @@ package yaq
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"net/textproto"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
 
 // TODO doc all the things
 type clerk struct {
-	// TODO: context
-	Enqueue        chan messageSend
-	Dequeue        chan messageReceive
-	Registry       *Registry
-	Queue          string
-	RootDirectory  string
-	queueDirectory string
+	// TODO: document
+	Enqueue chan messageSend
+	// TODO: document
+	Dequeue chan messageReceive
+	// TODO: document
+	Registry *Registry
+	// TODO: document
+	Queue string
+	// TODO: document
+	QueueDirectory string
+}
+
+// TODO: document (and later replace some of these)
+const emptyTimeout time.Duration = 10 * time.Second
+const maxCapacity int = 3
+const permissions os.FileMode = 0644
+const messageFileNameFormat string = "@%010d"
+
+// messageFileName returns the file name for a queue message having the
+// specified messageNumber.  Message file names are the number, but
+// additionally:
+// - prefixed with a "@" to avoid collisions with queue names, and
+// - padded with leading zeros so that lexicographical ordering is the same
+//   as numerical ordering, at least up to a very large number.
+func messageFileName(messageNumber int64) string {
+	return fmt.Sprintf(messageFileNameFormat, messageNumber)
+}
+
+// TODO: refactor oldest() into something that can be used for both oldest() and next().
+
+func (clerk *clerk) oldest() (result int64) {
+	contents, err := os.ReadFile(filepath.Join(clerk.QueueDirectory, "@oldest"))
+	if err == os.ErrNotExist {
+		return 0 // TODO
+	}
+	if err != nil {
+		// TODO: seems risky
+		panic(err)
+	}
+
+	// Parse the number from the contents of the file.
+	numParsed, err := fmt.Fscanf(bytes.NewReader(contents), messageFileNameFormat, &result)
+	if err != nil {
+		// TODO: seems risky
+		panic(err)
+	}
+	if numParsed != 1 {
+		// TODO: seems risky
+		panic("unable to parse message number from @oldest")
+	}
+
+	return
 }
 
 // TODO: document
-const emptyTimeout time.Duration = 10 * time.Second
-
-// TODO: document
 func (clerk *clerk) Run() {
-	clerk.queueDirectory = "TODO"
-	// TODO
+	if err := os.MkdirAll(clerk.QueueDirectory, permissions); err != nil {
+		// TODO: need a better policy
+		panic(fmt.Sprintf("unable to create directory: %q error: %v", clerk.QueueDirectory, err))
+	}
+	// TODO: read/create queue's state
+	// TODO: loop, with cases for:
+	//     - empty (could also be full)
+	//     - full (could also be empty)
+	//     - neither
 }
 
 // messageSend satisfies the messageReceive interface.
